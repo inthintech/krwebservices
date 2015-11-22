@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Sharemovie extends CI_Controller {
+class Sharemovie_backup extends CI_Controller {
 
 	public function __construct()
     {
@@ -16,9 +16,36 @@ class Sharemovie extends CI_Controller {
     	echo 'Connected';
     }
 
-    private function getuserid($id)
+    private function getuserid($accessToken)
 	{
+		// facebook url
+		$service_url = 'https://graph.facebook.com/v2.4/me?access_token='.$accessToken.'&fields=id';
+
+		//make the api call and store the response
+		$curl = curl_init($service_url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		$curl_response = curl_exec($curl);
 		
+		//if the api call is failed
+		if ($curl_response === false) {
+		    //$info = curl_getinfo($curl);
+		    curl_close($curl);
+		    //die('error occured during curl exec. Additioanl info: ' . var_export($info));
+		    return false;
+
+		}
+		curl_close($curl);
+		$decoded = json_decode($curl_response);
+		
+		//if the api call is success but error from facebook
+		if (isset($decoded->error)) {
+			//echo 'error';
+		    //die('error occured: ' . $decoded->response->errormessage);
+		    return false;
+		}
+
+		$id = $decoded->id;
+
 		$query = $this->db->query("select user_id from users where fb_id=".$this->db->escape($id));
 		$result = $query->result();
 		if($result)
@@ -87,17 +114,7 @@ class Sharemovie extends CI_Controller {
 			     
 			      if($query)
 			      {
-			        
-			        $userid = $this->getuserid($id);
-			        if($userid)
-			        {
-			        	echo json_encode(array('success'=>$userid));
-			        }
-			        else
-			        {
-			        	echo json_encode(array('error'=>'Unable to reach app server'));
-			        	exit;
-			        }
+			        echo json_encode(array('success'=>$id));
 			      }
 			      else
 			      {
@@ -112,17 +129,7 @@ class Sharemovie extends CI_Controller {
 			     
 			      if($query)
 			      {
-			        $userid = $this->getuserid($id);
-			        if($userid)
-			        {
-			        	echo json_encode(array('success'=>$userid));
-			        }
-			        else
-			        {
-			        	echo json_encode(array('error'=>'Unable to reach app server'));
-			        	exit;
-			        }
-			        
+			        echo json_encode(array('success'=>$id));
 			      }
 			      else
 			      {
