@@ -553,16 +553,18 @@ class Sharemovie extends CI_Controller {
 		}
 	}
 
-	public function getmygroups($accessToken)
+	public function getmygroups($id)
 	{
-		if(isset($accessToken))
+		if(isset($id))
 		{	
-			$id = $this->getuserid($accessToken);
-			if($id)
-			{
-		     
-		     	$query = $this->db->query("select g.group_id,name from groups g join groupuser gu on g.group_id=gu.group_id 
-		     		where gu.user_id=".$this->db->escape($id));
+
+		     	$query = $this->db->query("select a.group_id,a.name,b.cnt from 
+				(select g.group_id,name from groups g join groupuser gu on g.group_id=gu.group_id 
+				where gu.user_id=".$this->db->escape($id).")a
+				join 
+				(select g.group_id,count(*) cnt from groups g join groupuser gu on g.group_id=gu.group_id 
+				group by g.group_id)b
+				on a.group_id=b.group_id");
 			     	
 			    if($query)
 			    {
@@ -573,7 +575,8 @@ class Sharemovie extends CI_Controller {
 							foreach($result as $row)
 							{
 								array_push($output,array('group_id'=>$row->group_id,
-								'group_name'=>$row->name
+								'group_name'=>$row->name,
+								'member_cnt'=>$row->cnt
 								));
 							} 
 							echo json_encode(array('output'=>$output));
@@ -590,13 +593,7 @@ class Sharemovie extends CI_Controller {
 			    {
 			    	echo json_encode(array('error'=>'Unable to reach app server'));
 			    	exit;
-			    }
-			}
-			else
-			{
-				echo json_encode(array('fberror'=>'Unable to reach app server'));
-			    exit;
-			}
+			    }		
 			
 		}
 
