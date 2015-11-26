@@ -569,8 +569,6 @@ class Sharemovie extends CI_Controller {
 
 			    	$result = $query->result();
 			    	$output = array();
-			    	if($result)
-						{
 							foreach($result as $row)
 							{
 								array_push($output,array('group_id'=>$row->group_id,
@@ -579,15 +577,7 @@ class Sharemovie extends CI_Controller {
 								));
 							} 
 							echo json_encode(array('output'=>$output));
-						}
-					else
-						{
-							echo json_encode(array('error'=>'Unable to reach app server'));
-			    			exit;
-						}
 
-
-			    
 			
 		}
 
