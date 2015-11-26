@@ -133,13 +133,11 @@ class Sharemovie extends CI_Controller {
 		}
 	}
 
-	public function creategroup($accessToken,$name)
+	public function creategroup($id,$name)
 	{
-		if(isset($accessToken)&&isset($name))
+		if(isset($id)&&isset($name))
 		{	
-			$id = $this->getuserid($accessToken);
-			if($id)
-			{
+
 				$query1 = $this->db->query("insert into groups(name,created_user_id,crte_ts,actv_f) 
 			    values(".$this->db->escape($name).",".$this->db->escape($id).",CURRENT_TIMESTAMP,'Y')");
 
@@ -171,12 +169,7 @@ class Sharemovie extends CI_Controller {
 			    	echo json_encode(array('error'=>'Unable to reach app server'));
 			    	exit;
 			    }
-			}
-			else
-			{
-				echo json_encode(array('fberror'=>'Unable to reach app server'));
-			    exit;
-			}
+			
 			
 		}
 
