@@ -565,9 +565,9 @@ class Sharemovie extends CI_Controller {
 				join 
 				(select g.group_id,count(*) cnt from groups g join groupuser gu on g.group_id=gu.group_id 
 				group by g.group_id)b
-				on a.group_id=b.group_id");
+				on a.group_id=b.group_id order by a.name");
 			     	
-
+		     		
 			    	$result = $query->result();
 			    	$output = array();
 							foreach($result as $row)
