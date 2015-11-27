@@ -138,6 +138,7 @@ class Sharemovie extends CI_Controller {
 		if(isset($id)&&isset($name))
 		{	
 
+				$name=htmlspecialchars_decode($name);
 				$query1 = $this->db->query("insert into groups(name,created_user_id,crte_ts,actv_f) 
 			    values(".$this->db->escape($name).",".$this->db->escape($id).",CURRENT_TIMESTAMP,'Y')");
 
