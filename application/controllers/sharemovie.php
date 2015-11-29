@@ -268,6 +268,9 @@ class Sharemovie extends CI_Controller {
 			   	{
 				     $query = $this->db->query("insert into groupmovie(group_id,user_id,movie_id,crte_ts) 
 				     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).",CURRENT_TIMESTAMP)"); 
+
+				     $query = $this->db->query("insert into groupmovievote(group_id,user_id,movie_id) 
+				     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).")"); 
 				     
 			   	}
 			    
