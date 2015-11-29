@@ -289,6 +289,44 @@ class Sharemovie extends CI_Controller {
 
 	}
 
+	public function votemovie($id,$movid,$grpid)
+	{
+		if(isset($id)&&isset($movid)&&isset($grpid))
+		{	
+			
+			   	//check if vote exists
+
+			    $query = $this->db->query("select * from groupmovievote 
+			    where group_id=".$this->db->escape($grpid)." and movie_id=".$this->db->escape($movid)." and user_id=".$this->db->escape($id)); 
+
+			    if($query -> num_rows() == 1)
+			   	{
+			     	echo json_encode(array('success'=>'You have already voted for the movie'));
+			    	exit;
+			   	}
+			   	else
+			   	{
+			
+				     $query = $this->db->query("insert into groupmovievote(group_id,user_id,movie_id) 
+				     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).")"); 
+				     
+			   	}
+			    
+
+			    if($query)
+			    {
+			    	echo json_encode(array('success'=>'You have voted for the movie successfully'));
+			    }
+			    else
+			    {
+			    	echo json_encode(array('error'=>'Unable to reach app server'));
+			    	exit;
+			    }
+			
+		}
+
+	}
+
 	public function removemovie($movid,$grpid)
 	{
 		if(isset($movid)&&isset($grpid))
