@@ -583,39 +583,26 @@ class Sharemovie extends CI_Controller {
 		if(isset($grpid))
 		{	
 		
-	     	$query = $this->db->query("select m.movie_id,m.name,m.image,m.year from movies m 
-	     		join groupmovie gm on m.movie_id=gm.movie_id 
-	     		where gm.group_id=".$this->db->escape($grpid));
+	     	$query = $this->db->query("select m.movie_id,m.name,m.image,m.year,u.name as shared_by,gmv.cnt as votes from movies m 
+				join groupmovie gm on m.movie_id=gm.movie_id 
+				join users u on gm.user_id=u.user_id
+				join (select group_id,movie_id,COUNT(*) CNT from groupmovievote group by group_id,movie_id)gmv
+				on gmv.group_id=gm.group_id and gmv.movie_id=gm.movie_id
+				where gm.group_id=".$this->db->escape($grpid));
 		     	
-		    if($query)
-		    {
 		    	$result = $query->result();
 		    	$output = array();
-		    	if($result)
-					{
 						foreach($result as $row)
 						{
 							array_push($output,array('movie_id'=>$row->movie_id,
 							'movie_name'=>$row->name,
 							'image'=>$row->image,
-							'year'=>$row->year
+							'year'=>$row->year,
+							'shared_by'=>$row->shared_by,
+							'votes'=>$row->votes
 							));
 						} 
 						echo json_encode(array('output'=>$output));
-					}
-				else
-					{
-						echo json_encode(array('error'=>'Unable to reach app server'));
-		    			exit;
-					}
-
-
-		    }
-		    else
-		    {
-		    	echo json_encode(array('error'=>'Unable to reach app server'));
-		    	exit;
-		    }
 			
 		}
 
