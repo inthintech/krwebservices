@@ -233,13 +233,11 @@ class Sharemovie extends CI_Controller {
 		}
 	}
 
-	public function addmovie($accessToken,$movid,$name,$year,$image,$grpid)
+	public function addmovie($id,$movid,$name,$year,$image,$grpid)
 	{
-		if(isset($accessToken)&&isset($movid)&&isset($name)&&isset($year)&&isset($image)&&isset($grpid))
+		if(isset($id)&&isset($movid)&&isset($name)&&isset($year)&&isset($image)&&isset($grpid))
 		{	
-			$id = $this->getuserid($accessToken);
-			if($id)
-			{
+			
 				
 				//check if new movie
 
@@ -259,37 +257,30 @@ class Sharemovie extends CI_Controller {
 			   	//check if movie exits for group
 
 			    $query = $this->db->query("select * from groupmovie 
-			    where group_id=".$this->db->escape($grpid)." 
-			    and user_id=".$this->db->escape($id)." and movie_id=".$this->db->escape($movid)); 
+			    where group_id=".$this->db->escape($grpid)." and movie_id=".$this->db->escape($movid)); 
 
 			    if($query -> num_rows() == 1)
 			   	{
-			     	echo json_encode(array('error'=>'Movie already added'));
+			     	echo json_encode(array('success'=>'Movie already shared to group'));
 			    	exit;
 			   	}
 			   	else
 			   	{
-				     $query = $this->db->query("insert into groupmovie(group_id,user_id,movie_id) 
-				     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).")"); 
+				     $query = $this->db->query("insert into groupmovie(group_id,user_id,movie_id,crte_ts) 
+				     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).",CURRENT_TIMESTAMP)"); 
 				     
 			   	}
 			    
 
 			    if($query)
 			    {
-			    	echo json_encode(array('success'=>'Movie added successfully'));
+			    	echo json_encode(array('success'=>'Movie shared to group successfully'));
 			    }
 			    else
 			    {
 			    	echo json_encode(array('error'=>'Unable to reach app server'));
 			    	exit;
 			    }
-			}
-			else
-			{
-				echo json_encode(array('fberror'=>'Unable to reach app server'));
-			    exit;
-			}
 			
 		}
 
