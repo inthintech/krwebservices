@@ -240,7 +240,7 @@ class Sharemovie extends CI_Controller {
 			
 				
 				//check if new movie
-
+				$name=urldecode($name);
 				$query = $this->db->query("select * from movies where movie_id=".$this->db->escape($movid));
 
 			    if($query -> num_rows() == 1)
