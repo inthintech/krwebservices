@@ -646,6 +646,29 @@ class Sharemovie extends CI_Controller {
 
 	}
 
+	public function getgroupmembers($grpid)
+	{
+		if(isset($grpid))
+		{	
+		
+	     	$query = $this->db->query("select u.name,u.profile_pic_url from groupuser gu
+				join users u on gu.user_id=u.user_id
+				where gu.group_id=".$this->db->escape($grpid));
+		     	
+		    	$result = $query->result();
+		    	$output = array();
+						foreach($result as $row)
+						{
+							array_push($output,array('name'=>$row->name,
+							'profile_pic_url'=>$row->profile_pic_url
+							));
+						} 
+						echo json_encode(array('output'=>$output));
+			
+		}
+
+	}
+
 
 /* End of class */
 }
