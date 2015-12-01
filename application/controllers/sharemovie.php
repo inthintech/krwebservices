@@ -138,6 +138,7 @@ class Sharemovie extends CI_Controller {
 		if(isset($id)&&isset($name))
 		{	
 
+				header('Content-type: application/json');
 				$name=urldecode($name);
 				$query1 = $this->db->query("insert into groups(name,created_user_id,crte_ts,actv_f) 
 			    values(".$this->db->escape($name).",".$this->db->escape($id).",CURRENT_TIMESTAMP,'Y')");
@@ -181,6 +182,7 @@ class Sharemovie extends CI_Controller {
 		
 		if(isset($movName))
 		{	
+			
 			header('Content-type: application/json');
 			$service_url = 'https://api.themoviedb.org/3/search/movie?api_key='.$this->movapikey.'&query='.$movName.'&page=1';
 
@@ -238,7 +240,7 @@ class Sharemovie extends CI_Controller {
 		if(isset($id)&&isset($movid)&&isset($name)&&isset($year)&&isset($image)&&isset($grpid))
 		{	
 			
-				
+				header('Content-type: application/json');
 				//check if new movie
 				$name=urldecode($name);
 				$query = $this->db->query("select * from movies where movie_id=".$this->db->escape($movid));
@@ -293,7 +295,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($id)&&isset($movid)&&isset($grpid))
 		{	
-			
+				header('Content-type: application/json');
 			   	//check if vote exists
 
 			    $query = $this->db->query("select * from groupmovievote 
@@ -331,7 +333,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($movid)&&isset($grpid))
 		{	
-
+				header('Content-type: application/json');
 				//check if new movie
 
 				$query = $this->db->query("delete from groupmovie where movie_id=".$this->db->escape($movid)." and 
@@ -355,7 +357,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($fbid)&&isset($grpid))
 		{	
-
+			header('Content-type: application/json');
 			$query = $this->db->query("select user_id from users where fb_id=".$this->db->escape($fbid));
 			$result = $query->result();
 			if($result)
@@ -404,7 +406,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($memid)&&isset($grpid))
 		{	
-		     
+		     header('Content-type: application/json');
 		     $query = $this->db->query("delete from groupuser 
 		     	where group_id=".$this->db->escape($grpid)." and user_id=".$this->db->escape($memid));
 		     	
@@ -426,6 +428,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($accessToken)&&isset($grpid))
 		{	
+			header('Content-type: application/json');
 			$id = $this->getuserid($accessToken);
 			if($id)
 			{
@@ -591,6 +594,7 @@ class Sharemovie extends CI_Controller {
 		if(isset($id))
 		{	
 
+		     	header('Content-type: application/json');
 		     	$query = $this->db->query("select a.group_id,a.name,b.cnt from 
 				(select g.group_id,name from groups g join groupuser gu on g.group_id=gu.group_id 
 				where gu.user_id=".$this->db->escape($id).")a
@@ -620,7 +624,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($grpid))
 		{	
-		
+			header('Content-type: application/json');
 	     	$query = $this->db->query("select m.movie_id,m.name,m.image,m.year,u.name as shared_by,gmv.cnt as votes from movies m 
 				join groupmovie gm on m.movie_id=gm.movie_id 
 				join users u on gm.user_id=u.user_id
@@ -650,7 +654,7 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($grpid))
 		{	
-		
+			header('Content-type: application/json');
 	     	$query = $this->db->query("select u.name,u.profile_pic_url from groupuser gu
 				join users u on gu.user_id=u.user_id
 				where gu.group_id=".$this->db->escape($grpid));
