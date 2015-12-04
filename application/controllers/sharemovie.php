@@ -61,7 +61,7 @@ class Sharemovie extends CI_Controller {
 			     
 			      if($query)
 			      {
-			        http_response_code(300);
+			        
 			        echo json_encode(array('success'=>$id));
 			      }
 			      else
