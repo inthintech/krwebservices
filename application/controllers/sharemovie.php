@@ -6,7 +6,7 @@ class Sharemovie extends CI_Controller {
     {
       	parent::__construct();
         // Your own constructor code
-        //$this->load->database('sharemovie');
+        $this->load->database('sharemovie');
         $this->movapikey='49b35ae23cb2dce9b78b40d209149e28';
         
     }
@@ -36,13 +36,6 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($accessToken))
 		{	
-			if(!$this->load->database('sharemovie'),TRUE))
-			{
-				echo json_encode(array('error'=>'Unable to connect to database!'));
-			    exit;
-			}
-			
-
 			header('Content-type: application/json');
 			// facebook url
 			$service_url = 'https://graph.facebook.com/v2.4/me?access_token='.$accessToken.'&fields=id,name,picture';
