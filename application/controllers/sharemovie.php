@@ -38,7 +38,7 @@ class Sharemovie extends CI_Controller {
 		{	
 			header('Content-type: application/json');
 			// facebook url
-			$service_url = 'https://graph.facebook.com/v2.4/me?access_token='.$accessToken.'&fields=id,name,picture';
+			$service_url = 'https://graph.facebook.com/v2.4/me?access_token='.$accessToken.'&fields=id,name';
 
 			//make the api call and store the response
 			$curl = curl_init($service_url);
@@ -69,7 +69,7 @@ class Sharemovie extends CI_Controller {
 
 			$id = $decoded->id;
 			$name = $decoded->name;
-			$pic = $decoded->picture->data->url;
+			//$pic = $decoded->picture->data->url;
 			//echo $id;
 
 
@@ -79,14 +79,13 @@ class Sharemovie extends CI_Controller {
 
 		    if($query -> num_rows() == 1)
 		   	{
-		     	$query = $this->db->query("update users set name=".$this->db->escape($name).",profile_pic_url=".
-		     	$this->db->escape($pic)." where fb_id=".$this->db->escape($id)); 
+		     	$query = $this->db->query("update users set name=".$this->db->escape($name)." where fb_id=".$this->db->escape($id)); 
 
 		     	//$userid = $this->getuserid($id);
 			     
 			      if($query)
 			      {
-			        echo json_encode(array('fbid'=>$id,'name'=>$name,'image'=>$pic));
+			        echo json_encode(array('fbid'=>$id,'name'=>$name));
 			        $this->db->close();
 			        exit;
 			      }
@@ -99,8 +98,8 @@ class Sharemovie extends CI_Controller {
 		   	}
 		   	else
 		   	{
-			     $query = $this->db->query("insert into users(fb_id,name,profile_pic_url,crte_ts) 
-			     values(".$this->db->escape($id).",".$this->db->escape($name).",".$this->db->escape($pic).",CURRENT_TIMESTAMP)"); 
+			     $query = $this->db->query("insert into users(fb_id,name,crte_ts) 
+			     values(".$this->db->escape($id).",".$this->db->escape($name).",CURRENT_TIMESTAMP)"); 
 			     
 			     //$userid = $this->getuserid($id);
 
