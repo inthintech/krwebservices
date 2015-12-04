@@ -11,10 +11,37 @@ class Sharemovie extends CI_Controller {
         
     }
 
+     private function getuserid($id)
+	{
+		
+		$query = $this->db->query("select user_id from users where fb_id=".$this->db->escape($id));
+		$result = $query->result();
+		if($result)
+		{
+			foreach($result as $row)
+			{
+				$userid=$row->user_id;
+			} 
+			return $userid;
+		}
+		else
+		{
+			return false;
+		}
+		
+
+	}
+
     public function login($accessToken)
 	{
 		if(isset($accessToken))
 		{	
+			if(!$this->load->database('sharemovie'))
+			{
+				echo json_encode(array('error'=>'Unable to connect to server!'));
+			    exit;
+			}
+
 			header('Content-type: application/json');
 			// facebook url
 			$service_url = 'https://graph.facebook.com/v2.4/me?access_token='.$accessToken.'&fields=id,name,picture';
@@ -30,6 +57,7 @@ class Sharemovie extends CI_Controller {
 			    curl_close($curl);
 			    //die('error occured during curl exec. Additioanl info: ' . var_export($info));
 			    echo json_encode(array('error'=>'Unable to reach facebook servers'));
+			    $this->db->close();
 			    exit;
 
 			}
@@ -41,6 +69,7 @@ class Sharemovie extends CI_Controller {
 				//echo 'error';
 			    //die('error occured: ' . $decoded->response->errormessage);
 			    echo($curl_response);
+			    $this->db->close();
 			    exit;
 			}
 
@@ -58,15 +87,19 @@ class Sharemovie extends CI_Controller {
 		   	{
 		     	$query = $this->db->query("update users set name=".$this->db->escape($name).",profile_pic_url=".
 		     	$this->db->escape($pic)." where fb_id=".$this->db->escape($id)); 
+
+		     	//$userid = $this->getuserid($id);
 			     
 			      if($query)
 			      {
-			        
-			        echo json_encode(array('success'=>$id));
+			        echo json_encode(array('fbid'=>$id,'name'=>$name,'image'=>$pic));
+			        $this->db->close();
+			        exit;
 			      }
 			      else
 			      {
-			        echo json_encode(array('error'=>'Unable to reach app server'));
+			        echo json_encode(array('error'=>'Unable to connect to server!'));
+			        $this->db->close();
 			        exit;
 			      }
 		   	}
@@ -75,19 +108,30 @@ class Sharemovie extends CI_Controller {
 			     $query = $this->db->query("insert into users(fb_id,name,profile_pic_url,crte_ts) 
 			     values(".$this->db->escape($id).",".$this->db->escape($name).",".$this->db->escape($pic).",CURRENT_TIMESTAMP)"); 
 			     
+			     //$userid = $this->getuserid($id);
+
 			      if($query)
 			      {
-			        echo json_encode(array('success'=>$id));
+			        echo json_encode(array('fbid'=>$id,'name'=>$name,'image'=>$pic));
+			        $this->db->close();
+			        exit;
 			      }
 			      else
 			      {
-			        echo json_encode(array('error'=>'Unable to reach app server'));
+			        echo json_encode(array('error'=>'Unable to connect to server!'));
+			        $this->db->close();
 			        exit;
 			      }
+			 
 		   	}
+		
+		   	
 		}
+
+	/***************** END OF FUNCTION *****************/	
 	}	
-	
+
+/***************** END OF CLASS *****************/
 }
 
 
