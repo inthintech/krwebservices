@@ -36,11 +36,12 @@ class Sharemovie extends CI_Controller {
 	{
 		if(isset($accessToken))
 		{	
-			if(!$this->load->database('sharemovie'))
+			if(!$this->load->database('sharemovie'),TRUE))
 			{
-				echo json_encode(array('error'=>'Unable to connect to server!'));
+				echo json_encode(array('error'=>'Unable to connect to database!'));
 			    exit;
 			}
+			
 
 			header('Content-type: application/json');
 			// facebook url
@@ -98,7 +99,7 @@ class Sharemovie extends CI_Controller {
 			      }
 			      else
 			      {
-			        echo json_encode(array('error'=>'Unable to connect to server!'));
+			        echo json_encode(array('error'=>'Unable to execute query!'));
 			        $this->db->close();
 			        exit;
 			      }
@@ -118,7 +119,7 @@ class Sharemovie extends CI_Controller {
 			      }
 			      else
 			      {
-			        echo json_encode(array('error'=>'Unable to connect to server!'));
+			        echo json_encode(array('error'=>'Unable to execute query!'));
 			        $this->db->close();
 			        exit;
 			      }
