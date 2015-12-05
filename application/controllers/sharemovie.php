@@ -409,6 +409,47 @@ class Sharemovie extends CI_Controller {
 	/***************** END OF FUNCTION *****************/
 	}
 
+	public function getgroupmembers($id,$grpid)
+	{
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+
+		$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	if($this->groupuservalidation($id,$grpid)==false)
+     	{
+     		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	$query = $this->db->query("select u.name,u.fb_id from groupuser gu
+			join users u on gu.user_id=u.user_id
+			where gu.group_id=".$this->db->escape($grpid));
+	     	
+    	$result = $query->result();
+    	$output = array();
+		foreach($result as $row)
+		{
+			array_push($output,array('name'=>$row->name,
+			'id'=>$row->fb_id));
+		} 
+		echo json_encode(array('output'=>$output));
+		$this->db->close();
+		exit;
+			
+		
+
+	/***************** END OF FUNCTION *****************/
+	}
+
 
 
 /***************** END OF CLASS *****************/
