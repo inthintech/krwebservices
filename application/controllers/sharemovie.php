@@ -51,7 +51,6 @@ class Sharemovie extends CI_Controller {
 			    curl_close($curl);
 			    //die('error occured during curl exec. Additioanl info: ' . var_export($info));
 			    echo json_encode(array('error'=>'Unable to reach facebook servers'));
-			    $this->db->close();
 			    exit;
 
 			}
@@ -63,7 +62,6 @@ class Sharemovie extends CI_Controller {
 				//echo 'error';
 			    //die('error occured: ' . $decoded->response->errormessage);
 			    echo($curl_response);
-			    $this->db->close();
 			    exit;
 			}
 
@@ -85,14 +83,12 @@ class Sharemovie extends CI_Controller {
 			     
 			      if($query)
 			      {
-			        echo json_encode(array('fbid'=>$id,'name'=>$name));
-			        $this->db->close();
+			        echo json_encode(array('success'=>'User successfully logged in'));
 			        exit;
 			      }
 			      else
 			      {
 			        echo json_encode(array('error'=>'Unable to execute query!'));
-			        $this->db->close();
 			        exit;
 			      }
 		   	}
@@ -105,14 +101,12 @@ class Sharemovie extends CI_Controller {
 
 			      if($query)
 			      {
-			        echo json_encode(array('fbid'=>$id,'name'=>$name,'image'=>$pic));
-			        $this->db->close();
+			        echo json_encode(array('success'=>'User successfully logged in'));			        
 			        exit;
 			      }
 			      else
 			      {
 			        echo json_encode(array('error'=>'Unable to execute query!'));
-			        $this->db->close();
 			        exit;
 			      }
 			 
