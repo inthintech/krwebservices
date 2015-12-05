@@ -276,6 +276,76 @@ class Sharemovie extends CI_Controller {
 	/***************** END OF FUNCTION *****************/
 	}
 
+	public function addmovie($id,$movid,$name,$year,$image,$grpid)
+	{
+	
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+
+		$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+		//check if new movie
+		$name=urldecode($name);
+		$query = $this->db->query("select * from movies where movie_id=".$this->db->escape($movid));
+
+	    if($query -> num_rows() == 1)
+	   	{
+	     	
+	   	}
+	   	else
+	   	{
+		     $query = $this->db->query("insert into movies(movie_id,name,image,year) 
+		     values(".$this->db->escape($movid).",".$this->db->escape($name).",".$this->db->escape($image).",".$this->db->escape($year).")"); 
+		     
+	   	}
+
+	   	//check if movie exits for group
+
+	    $query = $this->db->query("select * from groupmovie 
+	    where group_id=".$this->db->escape($grpid)." and movie_id=".$this->db->escape($movid)); 
+
+	    if($query -> num_rows() == 1)
+	   	{
+	     	echo json_encode(array('success'=>'Movie already shared to group'));
+	     	$this->db->close();
+	    	exit;
+	   	}
+	   	else
+	   	{
+		     $query = $this->db->query("insert into groupmovie(group_id,user_id,movie_id,crte_ts) 
+		     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).",CURRENT_TIMESTAMP)"); 
+
+		     $query = $this->db->query("insert into groupmovievote(group_id,user_id,movie_id) 
+		     	values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).")"); 
+		     
+	   	}
+	    
+
+	    if($query)
+	    {
+	    	echo json_encode(array('success'=>'Movie shared to group successfully'));
+	    	$this->db->close();
+	    	exit;
+	    }
+	    else
+	    {
+	    	echo json_encode(array('error'=>'Unable to execute query!'));
+	    	$this->db->close();
+	    	exit;
+	    }
+			
+		
+
+	/***************** END OF FUNCTION *****************/
+	}
+
 
 
 /***************** END OF CLASS *****************/
