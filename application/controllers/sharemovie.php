@@ -11,7 +11,7 @@ class Sharemovie extends CI_Controller {
         
     }
 
-     private function getuserid($id)
+    private function getuserid($id)
 	{
 		
 		$query = $this->db->query("select user_id from users where fb_id=".$this->db->escape($id));
@@ -28,7 +28,20 @@ class Sharemovie extends CI_Controller {
 		{
 			return false;
 		}
+	}
+	private function groupuservalidation($id,$grpid)
+	{
 		
+		$query = $this->db->query("select user_id from groupuser where user_id=".$this->db->escape($id)." and group_id=".$this->db->escape($grpid));
+		
+		if($query -> num_rows() == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 
 	}
 
@@ -340,6 +353,56 @@ class Sharemovie extends CI_Controller {
 	    	$this->db->close();
 	    	exit;
 	    }
+			
+		
+
+	/***************** END OF FUNCTION *****************/
+	}
+
+	public function getgroupmovies($id,$grpid)
+	{
+	
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+
+		$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	if($this->groupuservalidation($id,$grpid)==false)
+     	{
+     		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	$query = $this->db->query("select m.movie_id,m.name,m.image,m.year,u.name as shared_by,gmv.cnt as votes from movies m 
+			join groupmovie gm on m.movie_id=gm.movie_id 
+			join users u on gm.user_id=u.user_id
+			join (select group_id,movie_id,COUNT(*) CNT from groupmovievote group by group_id,movie_id)gmv
+			on gmv.group_id=gm.group_id and gmv.movie_id=gm.movie_id
+			where gm.group_id=".$this->db->escape($grpid));
+	     	
+    	$result = $query->result();
+    	$output = array();
+		foreach($result as $row)
+		{
+			array_push($output,array('movie_id'=>$row->movie_id,
+			'movie_name'=>$row->name,
+			'image'=>$row->image,
+			'year'=>$row->year,
+			'shared_by'=>$row->shared_by,
+			'votes'=>$row->votes
+			));
+		} 
+		echo json_encode(array('output'=>$output));
+		$this->db->close();
+	    exit;
 			
 		
 
