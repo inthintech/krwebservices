@@ -164,6 +164,62 @@ class Sharemovie extends CI_Controller {
 	/***************** END OF FUNCTION *****************/
 	}
 
+	public function creategroup($id,$name)
+	{
+
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+
+		$name=urldecode($name);
+
+		$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+		$query1 = $this->db->query("insert into groups(name,created_user_id,crte_ts,actv_f) 
+	    values(".$this->db->escape($name).",".$this->db->escape($id).",CURRENT_TIMESTAMP,'Y')");
+
+	    $query = $this->db->query("select group_id from groups where created_user_id="
+	    .$this->db->escape($id)." order by crte_ts desc LIMIT 1");
+
+	    $result = $query->result();
+
+	    if($result)
+		{
+			foreach($result as $row)
+			{
+				$groupid=$row->group_id;
+			} 
+		}
+
+	    $query2 = $this->db->query("insert into groupadmin(group_id,admin_user_id) 
+	    values(".$this->db->escape($groupid).",".$this->db->escape($id).")"); 
+
+	    $query3 = $this->db->query("insert into groupuser(group_id,user_id,actv_f) 
+	    values(".$this->db->escape($groupid).",".$this->db->escape($id).",'Y')"); 
+
+	    if($query1&&$query2&&$query3)
+	    {
+	    	echo json_encode(array('success'=>'Group created successfully'));
+	    	$this->db->close();
+	    	exit;
+	    }
+	    else
+	    {
+	    	echo json_encode(array('error'=>'Unable to execute query!'));
+	    	$this->db->close();
+	    	exit;
+	    }
+
+
+	/***************** END OF FUNCTION *****************/
+	}
+
 
 
 /***************** END OF CLASS *****************/
