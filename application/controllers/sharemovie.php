@@ -443,9 +443,73 @@ class Sharemovie extends CI_Controller {
 		} 
 		echo json_encode(array('output'=>$output));
 		$this->db->close();
-		exit;
-			
-		
+		exit;	
+
+	/***************** END OF FUNCTION *****************/
+	}
+
+	public function addmember($id,$fbid,$grpid)
+	{
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+
+		$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	if($this->groupuservalidation($id,$grpid)==false)
+     	{
+     		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+		$fbid = $this->getuserid($fbid);
+
+		if($fbid==false)
+     	{
+     		echo json_encode(array('success'=>'User data missing in database!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+	   	//check if member exits for group
+
+	    $query = $this->db->query("select * from groupuser 
+	    where group_id=".$this->db->escape($grpid)." 
+	    and user_id=".$this->db->escape($fbid)); 
+
+	    if($query -> num_rows() == 1)
+	   	{
+	     	echo json_encode(array('sucess'=>'Member already added to group'));
+	     	$this->db->close();
+	    	exit;
+	   	}
+	   	else
+	   	{
+		     $query = $this->db->query("insert into groupuser(group_id,user_id,actv_f) 
+		     values(".$this->db->escape($grpid).",".$this->db->escape($fbid).",'Y')"); 
+		     
+	   	}
+	    
+
+	    if($query)
+	    {
+	    	echo json_encode(array('success'=>'Member added to group successfully'));
+	    	$this->db->close();
+	    	exit;
+	    }
+	    else
+	    {
+	    	echo json_encode(array('error'=>'Unable to execute query!'));
+	    	$this->db->close();
+	    	exit;
+	    }
 
 	/***************** END OF FUNCTION *****************/
 	}
