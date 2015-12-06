@@ -514,6 +514,63 @@ class Sharemovie extends CI_Controller {
 	/***************** END OF FUNCTION *****************/
 	}
 
+	public function votemovie($id,$movid,$grpid)
+	{
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+	   	
+	   	$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	if($this->groupuservalidation($id,$grpid)==false)
+     	{
+     		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+	   	//check if vote exists
+
+	    $query = $this->db->query("select * from groupmovievote 
+	    where group_id=".$this->db->escape($grpid)." and movie_id=".$this->db->escape($movid)." and user_id=".$this->db->escape($id)); 
+
+	    if($query -> num_rows() == 1)
+	   	{
+	     	echo json_encode(array('success'=>'You have already voted for the movie'));
+	    	$this->db->close();
+	    	exit;
+	   	}
+	   	else
+	   	{
+	
+		     $query = $this->db->query("insert into groupmovievote(group_id,user_id,movie_id) 
+		     values(".$this->db->escape($grpid).",".$this->db->escape($id).",".$this->db->escape($movid).")"); 
+		     
+	   	}
+	    
+
+	    if($query)
+	    {
+	    	echo json_encode(array('success'=>'You have voted for the movie successfully'));
+	    	$this->db->close();
+	    	exit;
+	    }
+	    else
+	    {
+	    	echo json_encode(array('error'=>'Unable to execute query!'));
+	    	$this->db->close();
+	    	exit;
+	    }
+
+	/***************** END OF FUNCTION *****************/
+	}
+
 
 
 /***************** END OF CLASS *****************/
