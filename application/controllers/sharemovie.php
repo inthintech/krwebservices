@@ -486,7 +486,7 @@ class Sharemovie extends CI_Controller {
 
 	    if($query -> num_rows() == 1)
 	   	{
-	     	echo json_encode(array('sucess'=>'Member already added to group'));
+	     	echo json_encode(array('success'=>'Member already added to group'));
 	     	$this->db->close();
 	    	exit;
 	   	}
