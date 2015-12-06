@@ -381,7 +381,7 @@ class Sharemovie extends CI_Controller {
 		    exit;
      	}
 
-     	$query = $this->db->query("select m.movie_id,m.name,m.image,m.year,u.name as shared_by,gmv.cnt as votes from movies m 
+     	$query = $this->db->query("select m.movie_id,m.name,m.image,m.year,u.name as shared_by,unix_timestamp(gm.crte_ts) as timestamp,gmv.cnt as votes from movies m 
 			join groupmovie gm on m.movie_id=gm.movie_id 
 			join users u on gm.user_id=u.user_id
 			join (select group_id,movie_id,COUNT(*) CNT from groupmovievote group by group_id,movie_id)gmv
@@ -397,7 +397,8 @@ class Sharemovie extends CI_Controller {
 			'image'=>$row->image,
 			'year'=>$row->year,
 			'shared_by'=>$row->shared_by,
-			'votes'=>$row->votes
+			'votes'=>$row->votes,
+			'timestamp'=>$row->timestamp
 			));
 		} 
 		echo json_encode(array('output'=>$output));
