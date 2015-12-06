@@ -386,7 +386,7 @@ class Sharemovie extends CI_Controller {
 			join users u on gm.user_id=u.user_id
 			join (select group_id,movie_id,COUNT(*) CNT from groupmovievote group by group_id,movie_id)gmv
 			on gmv.group_id=gm.group_id and gmv.movie_id=gm.movie_id
-			where gm.group_id=".$this->db->escape($grpid)." order by gm.crte_ts desc");
+			where gm.group_id=".$this->db->escape($grpid)." order by gmv.cnt desc");
 	     	
     	$result = $query->result();
     	$output = array();
