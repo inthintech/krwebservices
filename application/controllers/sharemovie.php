@@ -45,6 +45,38 @@ class Sharemovie extends CI_Controller {
 
 	}
 
+	private function grpLimitValidation($id)
+	{
+		
+		$query = $this->db->query("select group_id from groups where created_user_id=".$this->db->escape($id));
+		
+		if($query -> num_rows() >= 2)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+
+	private function memberLimitValidation($grpid)
+	{
+		
+		$query = $this->db->query("select user_id from groupuser where group_id=".$this->db->escape($grpid));
+		
+		if($query -> num_rows() >= 30)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+
 
 	public function login($accessToken)
 	{
@@ -193,6 +225,16 @@ class Sharemovie extends CI_Controller {
 		    $this->db->close();
 		    exit;
      	}
+
+     	$totalgrp = $this->grpLimitValidation($id);
+
+     	if($totalgrp==true)
+     	{
+     		echo json_encode(array('success'=>'Maximum limit reached'));
+		    $this->db->close();
+		    exit;
+     	}
+
 
 		$query1 = $this->db->query("insert into groups(name,created_user_id,crte_ts,actv_f) 
 	    values(".$this->db->escape($name).",".$this->db->escape($id).",CURRENT_TIMESTAMP,'Y')");
@@ -466,6 +508,15 @@ class Sharemovie extends CI_Controller {
      	if($this->groupuservalidation($id,$grpid)==false)
      	{
      		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	$totalmem = $this->memberLimitValidation($grpid);
+
+     	if($totalmem==true)
+     	{
+     		echo json_encode(array('success'=>'Maximum limit reached'));
 		    $this->db->close();
 		    exit;
      	}
