@@ -50,7 +50,7 @@ class Sharemovie extends CI_Controller {
 		
 		$query = $this->db->query("select group_id from groups where created_user_id=".$this->db->escape($id));
 		
-		if($query -> num_rows() >= 2)
+		if($query -> num_rows() >= 30)
 		{
 			return true;
 		}
