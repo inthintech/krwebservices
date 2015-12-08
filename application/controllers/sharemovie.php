@@ -48,7 +48,7 @@ class Sharemovie extends CI_Controller {
 	private function grpLimitValidation($id)
 	{
 		
-		$query = $this->db->query("select group_id from groups where created_user_id=".$this->db->escape($id));
+		$query = $this->db->query("select group_id from groups where actv_f='Y' and created_user_id=".$this->db->escape($id));
 		
 		if($query -> num_rows() >= 30)
 		{
@@ -610,6 +610,50 @@ class Sharemovie extends CI_Controller {
 	    if($query)
 	    {
 	    	echo json_encode(array('success'=>'You have voted for the movie successfully'));
+	    	$this->db->close();
+	    	exit;
+	    }
+	    else
+	    {
+	    	echo json_encode(array('error'=>'Unable to execute query!'));
+	    	$this->db->close();
+	    	exit;
+	    }
+
+	/***************** END OF FUNCTION *****************/
+	}
+
+	public function exitgroup($id,$grpid)
+	{
+		$this->load->database('sharemovie');
+		header('Content-type: application/json');
+
+		$id = $this->getuserid($id);
+
+     	if($id==false)
+     	{
+     		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	if($this->groupuservalidation($id,$grpid)==false)
+     	{
+     		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+ 
+	     $query = $this->db->query("delete from groupuser where 
+	     group_id=".$this->db->escape($grpid)." and user_id=".$this->db->escape($id)); 
+	     
+	     $query = $this->db->query("update groups set actv_f='N' where 
+	     group_id=".$this->db->escape($grpid)); 
+	    
+	    if($query)
+	    {
+	    	echo json_encode(array('success'=>'You have exited the group'));
 	    	$this->db->close();
 	    	exit;
 	    }
