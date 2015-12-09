@@ -77,6 +77,22 @@ class Sharemovie extends CI_Controller {
 
 	}
 
+	private function movieLimitValidation($grpid)
+	{
+		
+		$query = $this->db->query("select movie_id from groupmovie where group_id=".$this->db->escape($grpid));
+		
+		if($query -> num_rows() >= 200)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+
 
 	public function login($accessToken)
 	{
@@ -342,6 +358,22 @@ class Sharemovie extends CI_Controller {
      	if($id==false)
      	{
      		echo json_encode(array('error'=>'Unable to authenticate!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	if($this->groupuservalidation($id,$grpid)==false)
+     	{
+     		echo json_encode(array('error'=>'User does not belong to this group!'));
+		    $this->db->close();
+		    exit;
+     	}
+
+     	$totalmov = $this->movieLimitValidation($id);
+
+     	if($totalmov==true)
+     	{
+     		echo json_encode(array('success'=>'Maximum limit reached'));
 		    $this->db->close();
 		    exit;
      	}
